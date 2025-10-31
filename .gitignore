@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv
+.venv*/
+.venv*/
+.env*/
+.build/
+
+# Project outputs
+*.log
+*.state.json
+last_response_dump.xml
+
+# OS
+.DS_Store
+Thumbs.db
