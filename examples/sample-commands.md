@@ -1,43 +1,89 @@
+# Sample commands — oai_harvester voor Collectie Nederland
+
+Kopieer en plak één van de onderstaande voorbeelden. Kies de variant voor uw shell (Bash of PowerShell).
+
+> Let op: dit bestand bevat **alleen voorbeeldcommando’s**.  
+> Het CI-voorbeeld hoort in `.github/workflows/ci.yml` en niet in deze file.
 
 ---
 
-## `examples/sample-commands.md`
+## Bash (Linux/macOS, of Git Bash op Windows)
 
-```markdown
-# Sample commands
-
-Alle records, beide dumps:
+### 1) Alle records, met CSV én JSONL
 ```bash
-python oai_harvester.py --url https://prod.dcn.hubs.delving.org/api/oai-pmh/ \
-  --verb ListRecords --prefix edm --set amsterdam-museum \
-  --out amsterdam.xml --dir ./out --dump beide --edm-field dc:title
+python oai_harvester.py   --url https://prod.dcn.hubs.delving.org/api/oai-pmh/   --verb ListRecords --prefix edm --set amsterdam-museum   --out amsterdam.xml --dir ./out --dump beide --edm-field dc:title
+```
 
-## Snelle test met 100 items:
-python oai_harvester.py --url https://prod.dcn.hubs.delving.org/api/oai-pmh/ \
-  --verb ListRecords --prefix edm --set amsterdam-museum \
-  --out test.xml --dir ./out --max-items 100 --dump csv --edm-field edm:isShownAt
+### 2) Snelle test met 100 items (CSV-dump)
+```bash
+python oai_harvester.py   --url https://prod.dcn.hubs.delving.org/api/oai-pmh/   --verb ListRecords --prefix edm --set amsterdam-museum   --out test.xml --dir ./out --max-items 100 --dump csv --edm-field edm:isShownAt
+```
 
+### 3) Alleen identifiers (snelle header-check)
+```bash
+python oai_harvester.py   --url https://prod.dcn.hubs.delving.org/api/oai-pmh/   --verb ListIdentifiers --prefix edm --set amsterdam-museum   --out amsterdam_ids.xml --dir ./out --max-items 100
+```
+
+### 4) Zonder setfilter, minimale record-check (1 item)
+```bash
+python oai_harvester.py   --url https://prod.dcn.hubs.delving.org/api/oai-pmh/   --verb ListRecords --prefix edm   --out all_edm.xml --dir ./out --max-items 1
+```
+
+### 5) Grote run met bestandsrotatie (per 200.000 items)
+```bash
+python oai_harvester.py   --url https://prod.dcn.hubs.delving.org/api/oai-pmh/   --verb ListRecords --prefix edm --set amsterdam-museum   --out amsterdam.xml --dir ./out --rotate-every 200000 --dump beide --edm-field dc:title
+```
 
 ---
 
-## `.github/workflows/ci.yml`
+## PowerShell (Windows)
 
-Minimalistische CI. Hij valideert alleen dat het script syntactisch OK is. Geen netwerkcalls in CI.
+Gebruik de **backtick** (\`) als regel-afbreking, of zet alles op één regel.
 
-```yaml
-name: CI
+### 1) Alle records, met CSV én JSONL
+```powershell
+python oai_harvester.py `
+  --url https://prod.dcn.hubs.delving.org/api/oai-pmh/ `
+  --verb ListRecords --prefix edm --set amsterdam-museum `
+  --out amsterdam.xml --dir ./out --dump beide --edm-field dc:title
+```
 
-on:
-  push:
-  pull_request:
+### 2) Snelle test met 100 items (CSV-dump)
+```powershell
+python oai_harvester.py `
+  --url https://prod.dcn.hubs.delving.org/api/oai-pmh/ `
+  --verb ListRecords --prefix edm --set amsterdam-museum `
+  --out test.xml --dir ./out --max-items 100 --dump csv --edm-field edm:isShownAt
+```
 
-jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - name: Syntax check
-        run: python -m py_compile oai_harvester.py
+### 3) Alleen identifiers (snelle header-check)
+```powershell
+python oai_harvester.py `
+  --url https://prod.dcn.hubs.delving.org/api/oai-pmh/ `
+  --verb ListIdentifiers --prefix edm --set amsterdam-museum `
+  --out amsterdam_ids.xml --dir ./out --max-items 100
+```
+
+### 4) Zonder setfilter, minimale record-check (1 item)
+```powershell
+python oai_harvester.py `
+  --url https://prod.dcn.hubs.delving.org/api/oai-pmh/ `
+  --verb ListRecords --prefix edm `
+  --out all_edm.xml --dir ./out --max-items 1
+```
+
+### 5) Grote run met bestandsrotatie (per 200.000 items)
+```powershell
+python oai_harvester.py `
+  --url https://prod.dcn.hubs.delving.org/api/oai-pmh/ `
+  --verb ListRecords --prefix edm --set amsterdam-museum `
+  --out amsterdam.xml --dir ./out --rotate-every 200000 --dump beide --edm-field dc:title
+```
+
+---
+
+## Notities
+- Gebruik **HTTPS** voor DCN: `https://prod.dcn.hubs.delving.org/api/oai-pmh/`.
+- Twijfelt u aan de setnaam? Run eerst `verb=ListSets` (interactief) of laat `--set` weg voor een snelle check.
+- `edm` en `edm-strict` zijn de meest gebruikte `metadataPrefix`-waarden binnen Collectie Nederland.
+- Voor Windows **CMD** (niet PowerShell) gebruikt u het caret-teken (`^`) voor regelafbreking.
