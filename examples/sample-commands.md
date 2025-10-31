@@ -1,4 +1,4 @@
-# Sample commands — oai_harvester voor Collectie Nederland
+# Sample commands - oai_harvester voor Collectie Nederland
 
 Kopieer en plak één van de onderstaande voorbeelden. Kies de variant voor uw shell (Bash of PowerShell).
 
