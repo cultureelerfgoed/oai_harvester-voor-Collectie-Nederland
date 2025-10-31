@@ -16,7 +16,8 @@ Deze release levert een complete **oai_harvester** voor **Collectie Nederland** 
 - Begin met limiet 100 voor een snelle check.
 - Gebruik `--dump csv` om snel een controlelijst te maken.
 - Bewaar de `.log`-bestanden bij grote runs.
-- Gebruik de DCN-endpoint: `https://prod.dcn.hubs.delving.org/api/oai-pmh/`.
+- Gebruik de DCN-endpoint:  
+  `https://prod.dcn.hubs.delving.org/api/oai-pmh/`.
 
 ## Bekende combinaties
 - `verb=ListRecords`, `metadataPrefix=edm` of `edm-strict`, optioneel `set=<uw set>`.
