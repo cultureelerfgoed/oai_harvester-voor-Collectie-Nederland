@@ -1,20 +1,54 @@
+# -----------------------------
 # Python
+# -----------------------------
 __pycache__/
-*.pyc
+*.py[cod]
 *.pyo
 *.pyd
+
+# Virtual environments
 .env
+.env*/
 .venv
 .venv*/
-.venv*/
-.env*/
-.build/
+venv/
+venv*/
 
-# Project outputs
+# Build / packaging
+.build/
+dist/
+build/
+*.egg-info/
+
+# -----------------------------
+# Project outputs (harvester)
+# -----------------------------
 *.log
 *.state.json
 last_response_dump.xml
 
+# XML / CSV / JSONL outputs (optioneel)
+# Zet uit als u voorbeelden wilt committen
+out/
+*.xml
+*.csv
+*.jsonl
+
+# -----------------------------
+# Test / coverage
+# -----------------------------
+.pytest_cache/
+.coverage
+htmlcov/
+
+# -----------------------------
+# IDE / editors
+# -----------------------------
+.vscode/
+.idea/
+
+# -----------------------------
 # OS
+# -----------------------------
 .DS_Store
 Thumbs.db
