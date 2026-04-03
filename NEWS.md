@@ -1,4 +1,4 @@
-# Nieuws — oai_harvester v1.0.0 voor Collectie Nederland
+# Nieuws — oai_harvester v1.1.0 voor Collectie Nederland
 
 Met deze release is er een complete, betrouwbare **OAI-PMH-harvester** beschikbaar voor **Collectie Nederland (DCN)**.  
 U gebruikt de tool direct vanaf de commandline, zonder externe Python-pakketten.
