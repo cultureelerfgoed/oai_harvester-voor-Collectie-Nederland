@@ -4,8 +4,9 @@
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![No dependencies](https://img.shields.io/badge/dependencies-none-lightgrey)
 
-Een robuuste, generieke **OAI-PMH harvester** voor Collectie Nederland (DCN) en andere OAI-PMH endpoints.  
-Werkt volledig met de Python-standaardbibliotheek.
+Een generieke **OAI-PMH harvester** voor Collectie Nederland (DCN) en andere OAI-PMH endpoints.
+Python (zonder dependencies) met hervatten, rotatie en exportopties.
+Werkt volledig met de Python-standaardbibliotheek. 
 
 ## TL;DR
 ```bash
