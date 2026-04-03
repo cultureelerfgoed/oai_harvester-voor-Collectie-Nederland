@@ -1,32 +1,55 @@
 # Nieuws — oai_harvester v1.0.0 voor Collectie Nederland
 
-Met deze release is er nu een complete, betrouwbare **OAI-PMH-harvester** voor **Collectie Nederland (DCN)**.  
-De tool werkt zonder externe Python-pakketten en kan direct vanaf de commandline worden gebruikt.
+Met deze release is er een complete, betrouwbare **OAI-PMH-harvester** beschikbaar voor **Collectie Nederland (DCN)**.  
+U gebruikt de tool direct vanaf de commandline, zonder externe Python-pakketten.
 
 ## Wat is nieuw
-- Interactieve bediening én commandline-opties.
-- Hervatten via `.state.json` na een onderbreking.
-- Limietkeuze bij start: 1, 100, 1000 of alles.
-- CSV- en JSONL-export naast het XML-bestand.
-- Preflight-controles (`Identify` en `ListMetadataFormats`) vóór het harvesten.
-- Robuuste netwerkafhandeling met retries, backoff en `Retry-After`.
-- Herstel van ongeldige XML (control characters, losse &).
-- Bestandsrotatie bij grote harvests.
+- Interactief gebruik én volledige CLI-ondersteuning.
+- Hervatten na onderbreking via `.state.json`.
+- Limiet bij start: 1, 100, 1000 of alles (`--max-items`).
+- Streaming naar XML met lage geheugendruk.
+- Bestandsrotatie bij grote harvests (`--rotate-every`).
+- CSV- en JSONL-export met identifier, datestamp en veld naar keuze.
+- Preflight-controles:
+  - `Identify`
+  - validatie van `metadataPrefix`
+- Robuuste netwerkafhandeling:
+  - retries en backoff
+  - respecteert `Retry-After`
+  - gzip/deflate ondersteuning
+- Automatische XML-reparatie:
+  - verwijdert ongeldige control characters
+  - herstelt losse `&` naar geldige XML
+- Logging naar `.log` met voortgang en fouten.
 
 ## Waarom dit handig is
-Deze harvester is bedoeld voor databeheerders, informatiespecialisten en ontwikkelaars binnen Collectie Nederland.  
-Hij haalt betrouwbare, complete OAI-PMH-data op en maakt die bruikbaar voor controle, verwerking of herpublicatie.
+Deze oai_harvester helpt u bij het betrouwbaar ophalen van OAI-PMH-data uit Collectie Nederland.  
+U gebruikt de output voor controle, verrijking, analyse of herpublicatie.
+
+De tool is geschikt voor:
+- databeheerders
+- informatiespecialisten
+- ontwikkelaars
+
+## Wat u krijgt
+- Eén of meerdere valide XML-bestanden (bij rotatie).
+- Optioneel CSV en/of JSONL voor snelle inspectie.
+- Herhaalbare runs met behoud van voortgang.
+- Inzicht via logbestanden.
 
 ## Aanbevolen gebruik
-1. Gebruik altijd de officiële DCN-endpoint:  
+1. Gebruik de officiële DCN-endpoint:  
    `https://prod.dcn.hubs.delving.org/api/oai-pmh/`
-2. Begin met een kleine limiet (100 records) om de instellingen te testen.
-3. Gebruik `--dump csv` voor een snelle lijst van identifiers en titels.
-4. Bewaar de `.log`-bestanden voor documentatie van de run.
+2. Start met een kleine limiet (bijv. 100 records).
+3. Gebruik `--dump csv` voor snelle controle van identifiers.
+4. Gebruik `--rotate-every` bij grote datasets.
+5. Controleer `.log` bij fouten of afwijkingen.
 
 ## Voorbeeld
 ```bash
 python oai_harvester.py \
   --url https://prod.dcn.hubs.delving.org/api/oai-pmh/ \
   --verb ListRecords --prefix edm --set amsterdam-museum \
-  --out amsterdam.xml --dir ./out --dump beide --edm-field edm:isShownAt
+  --out amsterdam.xml --dir ./out \
+  --dump beide --edm-field edm:isShownAt \
+  --rotate-every 200000
