@@ -75,5 +75,19 @@ jobs:
           pip install bandit==1.7.9
 
       - name: Bandit scan
-        # Sluit tests/ uit en scan de hoofdscriptfile
         run: bandit -q -r . -x tests
+
+  smoke:
+    name: Smoke test (CLI)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: CLI help test
+        run: python oai_harvester.py --help
