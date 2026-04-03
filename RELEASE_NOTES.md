@@ -1,4 +1,4 @@
-# Release Notes v1.0.0
+# Release Notes v1.1.0
 
 Deze release levert een complete **oai_harvester** voor **Collectie Nederland**, maar is generiek inzetbaar voor **alle OAI-PMH endpoints**.  
 De tool gebruikt uitsluitend de Python-standaardbibliotheek.
