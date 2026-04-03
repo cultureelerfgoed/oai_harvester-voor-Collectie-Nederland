@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.0.0 — Collectie Nederland
+## v1.1.0 — Collectie Nederland
 
 ### Nieuw
 - Volledige OAI-PMH-harvester voor **Collectie Nederland (DCN)** en vergelijkbare endpoints.
