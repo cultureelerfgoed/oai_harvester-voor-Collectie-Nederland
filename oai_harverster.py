@@ -5,6 +5,7 @@ Complete OAI-PMH harvester (stdlib-only) met:
 - Interactieve invoer of CLI-opties
 - Robust fetch (retries, backoff, gzip/deflate, Retry-After)
 - Preflight: Identify + validatie ListMetadataFormats
+- ListSets: interactieve keuzelijst van beschikbare sets
 - Streaming naar één bestand met OAI-conforme wrapper
 - Rotatie: nieuw bestand na N items
 - Hervatten via .state.json
@@ -149,7 +150,6 @@ def safe_open_url(req: urllib.request.Request, logger: Logger, retries: int = 3,
                 try:
                     wait = max(wait, float(retry_after))
                 except ValueError:
-                    # Als Retry-After geen seconds is: val terug op backoff
                     pass
             if attempt == retries - 1:
                 raise
@@ -308,6 +308,46 @@ def preflight_check_metadata_prefix(base_url: str, headers: dict, dump_path: str
     logger.log(f"Beschikbare metadataPrefix: {', '.join(prefixes) if prefixes else '(geen)'}")
     if desired_prefix not in prefixes:
         raise SystemExit(f"metadataPrefix '{desired_prefix}' niet beschikbaar. Kies een van: {', '.join(prefixes)}")
+
+# -----------------------------
+# ListSets: interactieve keuzelijst
+# -----------------------------
+def list_sets_interactive(base_url: str, headers: dict, dump_path: str, logger: Logger,
+                          retries: int, backoff: float) -> Optional[str]:
+    url = build_url(base_url, {"verb": "ListSets"})
+    logger.log(f"Ophalen beschikbare sets: {url}")
+    try:
+        root, text = fetch_and_parse(url, headers, dump_path, logger, retries, backoff)
+    except Exception as e:
+        logger.log(f"ListSets mislukt: {e}. Handmatig een set opgeven.")
+        return ask_input("Geef set= waarde (of laat leeg voor geen set)", "") or None
+
+    sets = []
+    for el in root.findall(".//oai:set", NS):
+        spec = el.findtext("oai:setSpec", default="", namespaces=NS).strip()
+        name = el.findtext("oai:setName", default="", namespaces=NS).strip()
+        if spec:
+            sets.append((spec, name))
+
+    if not sets:
+        logger.log("Geen sets gevonden. Handmatig opgeven.")
+        return ask_input("Geef set= waarde (of laat leeg)", "") or None
+
+    print(f"\nBeschikbare sets ({len(sets)} gevonden):")
+    for i, (spec, name) in enumerate(sets, 1):
+        label = f"  {name}" if name and name != spec else ""
+        print(f"  {i:3d}. {spec}{label}")
+    print(f"    0. (geen set — harvest alles)")
+
+    while True:
+        ans = input(f"\nKies een nummer [0–{len(sets)}]: ").strip()
+        if ans == "0" or ans == "":
+            return None
+        if ans.isdigit() and 1 <= int(ans) <= len(sets):
+            chosen = sets[int(ans) - 1][0]
+            logger.log(f"Gekozen set: {chosen}")
+            return chosen
+        print(f"  Voer een getal in tussen 0 en {len(sets)}.")
 
 # -----------------------------
 # EDM-veld extractie
@@ -577,9 +617,20 @@ def main():
     metadata_prefix = args.prefix
     if verb in ("ListRecords", "ListIdentifiers", "GetRecord") and not metadata_prefix:
         metadata_prefix = ask_input("Geef metadataPrefix", "edm")
+
+    # Set kiezen via ListSets (tenzij al opgegeven via CLI)
     set_spec = args.set_spec
     if verb in ("ListRecords", "ListIdentifiers") and set_spec is None:
-        set_spec = ask_input("Geef set= waarde (of laat leeg)", "amsterdam-museum")
+        headers_preflight = {
+            "User-Agent": "OAI-PMH harvester (Python stdlib)",
+            "Accept": "application/xml, text/xml;q=0.9, */*;q=0.1",
+            "Accept-Encoding": "identity, gzip, deflate",
+        }
+        tmp_dir = args.dir or "."
+        os.makedirs(tmp_dir, exist_ok=True)
+        tmp_dump = os.path.join(tmp_dir, "last_response_dump.xml")
+        tmp_log = Logger(os.path.join(tmp_dir, "_preflight.log"))
+        set_spec = list_sets_interactive(base_url, headers_preflight, tmp_dump, tmp_log, args.retries, args.backoff)
 
     default_name = f"{verb.lower()}_{(set_spec or 'all')}.xml"
     filename = args.out or ask_input("Geef bestandsnaam (zonder pad)", default_name)
