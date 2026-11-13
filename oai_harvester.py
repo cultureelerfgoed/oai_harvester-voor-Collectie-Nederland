@@ -261,10 +261,21 @@ def state_path_for(out_path: str) -> str:
     return out_path + ".state.json"
 
 def save_state(path: str, state: dict):
+    import time
+
     tmp = path + ".tmp"
+
     with open(tmp, "w", encoding="utf-8") as f:
         json.dump(state, f, ensure_ascii=False, indent=2)
-    os.replace(tmp, path)
+
+    for poging in range(10):
+        try:
+            os.replace(tmp, path)
+            return
+        except PermissionError:
+            if poging == 9:
+                raise
+            time.sleep(0.5)
 
 def load_state(path: str) -> Optional[dict]:
     if not os.path.exists(path):

@@ -52,3 +52,5 @@ htmlcov/
 # -----------------------------
 .DS_Store
 Thumbs.db
+state.backup.json
+state.tmp.backup.json
